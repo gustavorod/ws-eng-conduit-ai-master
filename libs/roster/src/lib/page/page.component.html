@@ -12,7 +12,7 @@
 <table>
   <thead>
     <tr>
-      <th>User Name</th>
+      <th>Username</th>
       <th>Total Articles</th>
       <th>Total Likes</th>
       <th>Date of First Article</th>
@@ -20,7 +20,10 @@
   </thead>
   <tbody>
     <tr *ngFor="let stat of userStats$ | async">
-      <td>{{ stat.username }}</td>
+      <td>
+        <!-- Adding the routerLink directive to create the hyperlink -->
+        <a [routerLink]="['/profile', stat.username]">{{ stat.username }}</a>
+      </td>
       <td>{{ stat.articles_count }}</td>
       <td>{{ stat.total_likes }}</td>
       <td>{{ stat.first_article_date | date }}</td>
