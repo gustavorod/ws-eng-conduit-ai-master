@@ -9,6 +9,13 @@ import { User } from './user.entity';
 import { IUserRO } from './user.interface';
 import { UserRepository } from './user.repository';
 
+export type UserStats = {
+  username: string;
+  articles_count: number;
+  total_likes: number;
+  first_article_date: Date | null; // 'null' if no post was made yet
+};
+
 @Injectable()
 export class UserService {
   constructor(private readonly userRepository: UserRepository, private readonly em: EntityManager) {}
@@ -113,5 +120,34 @@ export class UserService {
     };
 
     return { user: userRO };
+  }
+
+  async getUserStats(): Promise<UserStats[]> {
+    const sql = `
+    SELECT
+        u.username, -- the username of the user
+        COUNT(a.id) AS articles_count, -- the total number of articles authored by the user
+        COALESCE(SUM(a.favorites_count), 0) AS total_likes, -- the total number of likes received on their articles
+        MIN(a.created_at) AS first_article_date -- the date of their first article
+
+      FROM
+        user u
+      LEFT JOIN
+        article a ON u.id = a.author_id -- assuming the foreign key on the articles table linking to the users table is 'author_id'
+
+      GROUP BY
+        u.id, u.username
+
+      ORDER BY
+        total_likes DESC; -- ordered by the total number of likes the user has from his articles
+    `;
+
+    const rawResults: UserStats[] = await this.em.getConnection().execute(sql);
+    return rawResults.map((result) => ({
+      username: result.username,
+      articles_count: result.articles_count,
+      total_likes: result.total_likes,
+      first_article_date: result.first_article_date ? new Date(result.first_article_date) : null,
+    }));
   }
 }
