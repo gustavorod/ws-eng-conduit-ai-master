@@ -1,7 +1,13 @@
 <h1>Conduit Roaster</h1>
 
-<h2>Total articles:</h2>
-<h2>Total likes:</h2>
+<ng-container *ngIf="currentUsername">
+  <ng-container *ngFor="let stat of userStats$ | async">
+    <ng-container *ngIf="stat.username === currentUsername">
+      <h2>Total articles: {{ stat.articles_count }}</h2>
+      <h2>Total likes: {{ stat.total_likes }}</h2>
+    </ng-container>
+  </ng-container>
+</ng-container>
 
 <table>
   <thead>
@@ -12,4 +18,13 @@
       <th>Date of First Article</th>
     </tr>
   </thead>
+  <tbody>
+    <tr *ngFor="let stat of userStats$ | async">
+      <td>{{ stat.username }}</td>
+      <td>{{ stat.articles_count }}</td>
+      <td>{{ stat.total_likes }}</td>
+      <td>{{ stat.first_article_date | date }}</td>
+      <!-- The date pipe formats the date. You can add parameters to adjust its format -->
+    </tr>
+  </tbody>
 </table>
