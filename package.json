@@ -5,7 +5,6 @@
   "scripts": {
     "ng": "nx",
     "nx": "nx",
-    "start:debug": "run-p -l start:frontend start:backend",
     "start": "run-p -l start:frontend start:backend",
     "start:frontend": "nx run frontend:serve",
     "start:backend": "nx run backend:serve",
