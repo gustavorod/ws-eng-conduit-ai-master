@@ -28,7 +28,7 @@ const structure: Field[] = [
   {
     type: 'INPUT',
     name: 'tagList',
-    placeholder: 'Enter Tags',
+    placeholder: 'Enter Tags (comma-separated)',
     validator: [],
   },
 ];
@@ -58,6 +58,12 @@ export class ArticleEditComponent implements OnInit, OnDestroy {
   }
 
   updateForm(changes: any) {
+    if (changes.tagList && typeof changes.tagList === 'string') {
+      changes.tagList = changes.tagList
+        .split(',') // Split the string by comma
+        .map((tag: string) => tag.trim()) // Trim each tag
+        .filter((tag: string, index: number, array: string[]) => tag || index === array.length - 1); // Only keep last empty tag
+    }
     this.store.dispatch(formsActions.updateData({ data: changes }));
   }
 
